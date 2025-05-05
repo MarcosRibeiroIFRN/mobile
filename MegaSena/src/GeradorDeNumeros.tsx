@@ -5,12 +5,19 @@ const GeradorDeNumeros = () => {
   const [numeros, setNumeros] = useState<number[]>([]);
 
   function gerarNumeros() {
-    const novoSet = new Set<number>();
-    while (novoSet.size < 6) {
-      const numero = Math.floor(Math.random() * 60) + 1;
-      novoSet.add(numero);
+    const min = 1;
+    const max = 60;
+    const lista: number[] = [];
+
+    while (lista.length < 6) {
+      const numero = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      if (!lista.includes(numero)) {
+        lista.push(numero);
+      }
     }
-    setNumeros(Array.from(novoSet));
+
+    setNumeros(lista);
   }
 
   return (
