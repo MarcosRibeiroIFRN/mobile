@@ -1,14 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View,TextInput} from 'react-native';
-import Randomizer from './Randomizer';
-import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Contador from './Contador';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Randomizer  
-     />
-      <StatusBar style="light" />
+      <Contador/>
     </View>
   );
 }
@@ -20,5 +17,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
 });
