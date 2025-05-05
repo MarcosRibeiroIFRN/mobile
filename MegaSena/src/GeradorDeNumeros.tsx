@@ -1,65 +1,76 @@
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, View,TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity,ImageBackground } from 'react-native';
 
-const GeradorDeNumeros=()=>{
-    
-    var lista:number[] = []
-    function Gerador(){
-        const min = 1
-        const max = 60
-        var i=0
-        var numero=0
-        numero = Math.floor(Math.random()*(max - min + 1 ))+ min
-        while (i < 6){
-            if(lista.includes(numero)){
-            continue   
-            }else{
-                lista.push(numero)
-                i++
-            }
-        }
-    
+const GeradorDeNumeros = () => {
+  const [numeros, setNumeros] = useState<number[]>([]);
+
+  function gerarNumeros() {
+    const novoSet = new Set<number>();
+    while (novoSet.size < 6) {
+      const numero = Math.floor(Math.random() * 60) + 1;
+      novoSet.add(numero);
     }
+    setNumeros(Array.from(novoSet));
+  }
 
-    return(
-        <View>
-            <View style={styles.container}>
-                <Text style={styles.paragraph}>
-                    {
-                        lista.map((name,index)=>{
-                            return(
-                                <text style={styles.txt} key={index}> {name} </text>
-                            )
-                        })
-                    }
-                </Text>
-            </View>
-            <View style={styles.container}>
-                <TouchableOpacity onPress={Gerador}>
-                    <Text style={styles.textoBotao}> Gerar Números</Text>
-                </TouchableOpacity>
-            </View>       
+  return (
+    <ImageBackground
+    source={{ uri: 'https://einvestidor.estadao.com.br/wp-content/uploads/2024/08/mega-sena-resultado-concurso-2757-quina_040820243613.png' }}
+    resizeMode="cover" 
+    style={styles.background}
+    >
+        <View style={styles.wrapper}>
+        <View style={styles.numerosContainer}>
+            {numeros.map((num, index) => (
+            <Text key={index} style={styles.numero}>{num}</Text>
+            ))}
         </View>
 
-    )
-    
-}
-const styles =StyleSheet.create({
-    container:{
-        flex:1,
-    },
-    paragraph:{
-        margin:24,
-    },
-    txt:{
-        width:'100%'
-    },
-    textoBotao:{
-        color:'#fff',
-        fontSize:18,
-        fontWeight:"bold"
-    }
-})
-export default GeradorDeNumeros
+        <TouchableOpacity style={styles.botao} onPress={gerarNumeros}>
+            <Text style={styles.textoBotao}>Gerar Números</Text>
+        </TouchableOpacity>
+        </View>
+    </ImageBackground>    
+  );
+};
 
+const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  numerosContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  numero: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    borderWidth:2,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 20,
+    margin: 10,
+  },
+  botao: {
+    backgroundColor: '#f5c160',
+    padding: 10,
+    borderRadius: 5,
+  },
+  textoBotao: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
+});
 
+export default GeradorDeNumeros;
