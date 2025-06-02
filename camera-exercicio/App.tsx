@@ -1,47 +1,71 @@
-import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture, CameraPictureOptions } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Sharing from 'expo-sharing';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [uri, setUri] = useState<string | null>(null);
-  const [photo,setPhoto] =useState<CameraCapturedPicture>()//a foto vai ser salva nessa variável
-  const cameraRef = useRef<CameraView>(null)
+  const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
+  const cameraRef = useRef<CameraView>(null);
+
   if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
+    // Ainda está carregando as permissões
+    return <View><Text>Solicitando permissão da câmera...</Text></View>;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
+    // Permissão não foi concedida ainda
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Text style={styles.message}>Permissão da câmera é necessária.</Text>
+        <Button onPress={requestPermission} title="Conceder permissão" />
       </View>
     );
   }
 
-  const __startCamera = async () => {
-    const {status} = await Camera.requestPermissionsAsync()
-    if (status === 'granted') {
-      // start the camera
-      setStartCamera(true)
-    } else {
-      Alert.alert('Access denied')
+  function toggleCameraFacing() {
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
+  }
+
+  async function takePhoto() {
+    if (cameraRef.current) {
+      const options: CameraPictureOptions = { quality: 1, base64: false, skipProcessing: true };
+      const capturedPhoto = await cameraRef.current.takePictureAsync(options);
+      if (capturedPhoto) {
+        setPhoto(capturedPhoto);
+      }
     }
   }
-  };
+
+  async function share() {
+    if (photo && await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(photo.uri);
+    } else {
+      alert('Compartilhamento não disponível neste dispositivo');
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      {photo ? (
+        <>
+          <Image source={{ uri: photo.uri }} style={styles.preview} />
+          <Button title="Compartilhar" onPress={share} />
+          <Button title="Tirar outra" onPress={() => setPhoto(null)} />
+        </>
+      ) : (
+        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Trocar Câmera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={takePhoto}>
+              <Text style={styles.text}>📸</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
     </View>
   );
 }
@@ -58,19 +82,26 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
+  preview: {
+    flex: 1,
+    resizeMode: 'contain',
+  },
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    margin: 64,
+    margin: 32,
+    justifyContent: 'space-between',
   },
   button: {
-    flex: 1,
     alignSelf: 'flex-end',
     alignItems: 'center',
+    backgroundColor: '#00000080',
+    padding: 10,
+    borderRadius: 8,
   },
   text: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
   },
