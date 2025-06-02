@@ -10,12 +10,12 @@ export default function App() {
   const cameraRef = useRef<CameraView>(null);
 
   if (!permission) {
-    // Ainda está carregando as permissões
+  
     return <View><Text>Solicitando permissão da câmera...</Text></View>;
   }
 
   if (!permission.granted) {
-    // Permissão não foi concedida ainda
+  
     return (
       <View style={styles.container}>
         <Text style={styles.message}>Permissão da câmera é necessária.</Text>
