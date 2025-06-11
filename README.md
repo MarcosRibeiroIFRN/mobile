@@ -1,1 +1,1 @@
-# mobile projeto gerador de numeros da megasena
+# mobile projeto calculadora
