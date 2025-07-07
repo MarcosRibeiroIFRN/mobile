@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SingleMovieScreen from './src/screens/SingleMovieScreen';
+import SearchMovieScreen from './src/screens/SearchMovieScreen';
+import { SearchProvider } from './src/SearchContext';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SearchProvider>
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="Single"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#6200ee',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          <Stack.Screen name="Single" component={SingleMovieScreen} options={{ title: 'Buscar Filme' }} />
+          <Stack.Screen name="Search" component={SearchMovieScreen} options={{ title: 'Lista de Filmes' }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SearchProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
