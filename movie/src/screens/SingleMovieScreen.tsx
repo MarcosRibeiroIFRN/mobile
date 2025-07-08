@@ -1,6 +1,7 @@
 import { View, TextInput, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import Movie from '../Movie';
+import MovieModal from '../MovieModal';
 import { IFilme } from '../IFilmes';
 import { useSearch } from '../SearchContext';
 
@@ -20,6 +21,7 @@ interface Props {
 export default function SingleMovieScreen({ navigation }: Props) {
   const { searchText, setSearchText } = useSearch();
   const [movie, setMovie] = useState<IFilme | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchMovie = async () => {
     if (searchText.trim()) {
@@ -34,6 +36,12 @@ export default function SingleMovieScreen({ navigation }: Props) {
       fetchMovie();
     }
   }, [searchText]);
+
+  const handleMoviePress = () => {
+    if (movie) {
+      setModalVisible(true);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -59,7 +67,13 @@ export default function SingleMovieScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
       
-      {movie && <Movie {...movie} />}
+      {movie && <Movie {...movie} onPress={handleMoviePress} />}
+      
+      <MovieModal 
+        visible={modalVisible}
+        movie={movie}
+        onClose={() => setModalVisible(false)}
+      />
     </ScrollView>
   );
 }

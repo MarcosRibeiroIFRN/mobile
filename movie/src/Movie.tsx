@@ -1,8 +1,13 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { IFilme } from './IFilmes';
 import { Card, Text } from 'react-native-paper';
 
-const Movie = (fm: IFilme) => {
+interface MovieProps extends IFilme {
+  onPress?: () => void;
+}
+
+const Movie = (props: MovieProps) => {
+  const { onPress, ...fm } = props;
   if (!fm || fm.Title === undefined) {
     return (
       <View style={styles.errorContainer}>
@@ -12,36 +17,38 @@ const Movie = (fm: IFilme) => {
   }
 
   return (
-    <Card style={styles.card} elevation={5}>
-      <Card.Cover 
-        source={{ uri: fm.Poster || 'https://via.placeholder.com/300x450?text=No+Image' }} 
-        style={styles.poster}
-      />
-      <Card.Title 
-        title={fm.Title} 
-        subtitle={`${fm.Year} - ${fm.Country}`}
-        titleStyle={styles.title}
-        subtitleStyle={styles.subtitle}
-      />
-      <Card.Content style={styles.content}>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Diretor:</Text>
-          <Text style={styles.value}>{fm.Director}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Roteirista:</Text>
-          <Text style={styles.value}>{fm.Writer}</Text>
-        </View>
-        {fm.Plot && (
-          <View style={styles.plotContainer}>
-            <Text style={styles.label}>Sinopse:</Text>
-            <Text style={styles.plot} numberOfLines={3} ellipsizeMode="tail">
-              {fm.Plot}
-            </Text>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+      <Card style={styles.card} elevation={5}>
+        <Card.Cover 
+          source={{ uri: fm.Poster || 'https://via.placeholder.com/300x450?text=No+Image' }} 
+          style={styles.poster}
+        />
+        <Card.Title 
+          title={fm.Title} 
+          subtitle={`${fm.Year} - ${fm.Country}`}
+          titleStyle={styles.title}
+          subtitleStyle={styles.subtitle}
+        />
+        <Card.Content style={styles.content}>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Diretor:</Text>
+            <Text style={styles.value}>{fm.Director}</Text>
           </View>
-        )}
-      </Card.Content>
-    </Card>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Roteirista:</Text>
+            <Text style={styles.value}>{fm.Writer}</Text>
+          </View>
+          {fm.Plot && (
+            <View style={styles.plotContainer}>
+              <Text style={styles.label}>Sinopse:</Text>
+              <Text style={styles.plot} numberOfLines={3} ellipsizeMode="tail">
+                {fm.Plot}
+              </Text>
+            </View>
+          )}
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 };
 

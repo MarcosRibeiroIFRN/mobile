@@ -1,6 +1,8 @@
 import { View, TextInput, Button, FlatList, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSearch } from '../SearchContext';
+import MovieModal from '../MovieModal';
+import { IFilme } from '../IFilmes';
 
 type Movie = {
   imdbID: string;
@@ -28,6 +30,8 @@ type Props = {
 export default function SearchMoviesScreen({ navigation }: Props) {
   const { searchText, setSearchText } = useSearch();
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<IFilme | null>(null);
 
   const fetchMovies = async () => {
     if (searchText.trim()) {
@@ -35,6 +39,13 @@ export default function SearchMoviesScreen({ navigation }: Props) {
       const data = await res.json();
       setMovies(data.Search || []);
     }
+  };
+
+  const fetchMovieDetails = async (imdbID: string) => {
+    const res = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=15dc2ff8`);
+    const data = await res.json();
+    setSelectedMovie(data);
+    setModalVisible(true);
   };
 
   useEffect(() => {
@@ -72,14 +83,24 @@ export default function SearchMoviesScreen({ navigation }: Props) {
         keyExtractor={(item) => item.imdbID}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View style={styles.movieItem}>
+          <TouchableOpacity 
+            style={styles.movieItem}
+            onPress={() => fetchMovieDetails(item.imdbID)}
+            activeOpacity={0.7}
+          >
             <Image source={{ uri: item.Poster }} style={styles.poster} />
             <View style={styles.movieInfo}>
               <Text style={styles.movieTitle}>{item.Title}</Text>
               <Text style={styles.movieYear}>{item.Year}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
+      />
+      
+      <MovieModal 
+        visible={modalVisible}
+        movie={selectedMovie}
+        onClose={() => setModalVisible(false)}
       />
     </View>
   );
